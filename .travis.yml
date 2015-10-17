@@ -6,4 +6,4 @@ script:
 - cd state-pattern/ && gradle check 	
 
 after_success:
-- gradle jacocoTestReport coveralls
+- cd state-pattern/ && gradle jacocoTestReport coveralls
