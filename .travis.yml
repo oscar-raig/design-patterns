@@ -2,5 +2,8 @@ language: java
 jdk:
 - oraclejdk8
 
+script:
+- state-pattern/gradle check 	
+
 after_success:
 - gradle jacocoTestReport coveralls
