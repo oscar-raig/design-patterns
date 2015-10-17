@@ -14,7 +14,7 @@ public class GumballStateMachine implements Observer {
   private OutController outController;
   private InController inController;
 
-  static final  int INITIAL_STATE = 0;
+  static final  int NO_QUARTER = 0;
   static final  int QUARTER_INSERTED = 1;
   static final int GUMBALL_SOLD = 2;
   static final int OUT_OF_GUMBALLS = 3;
@@ -26,7 +26,7 @@ public class GumballStateMachine implements Observer {
     this.inController = inController;
     this.outController = outController;
     this.inController.addObserver(this);
-    state = INITIAL_STATE;
+    state = NO_QUARTER;
 
   }
 
@@ -35,12 +35,12 @@ public class GumballStateMachine implements Observer {
 
     int event = (int)arg;
     switch (state) {
-      case INITIAL_STATE:
+      case NO_QUARTER:
         if (event == InController.EVENT_QUARTER_INSERTED) {
           state = QUARTER_INSERTED;
           outController.turnsOffLightOutOfGumballs();
         } else {
-          logger.error("INITIAL_STATE error unexpected event");
+          logger.error("NO_QUARTER error unexpected event");
         }
         break;
       case QUARTER_INSERTED:
@@ -56,14 +56,14 @@ public class GumballStateMachine implements Observer {
           state = OUT_OF_GUMBALLS;
           outController.turnsOnLightOutOfGumballs();
         } else if ( event == InController.EVENT_GUMBALLS_NOT_FINISHED) {
-          state = INITIAL_STATE;
+          state = NO_QUARTER;
         }  else {
           logger.error("GUMBALL_SOLD error unexpected event");
         }
         break;
       default:
         logger.error("Unexpected state" + state);
-        state = INITIAL_STATE;
+        state = NO_QUARTER;
     }
 
   }
@@ -74,8 +74,8 @@ public class GumballStateMachine implements Observer {
 
   public String stateToString() {
     switch (state) {
-      case INITIAL_STATE:
-        return "INITIAL_STATE";
+      case NO_QUARTER:
+        return "NO_QUARTER";
       case QUARTER_INSERTED:
         return "QUARTER_INSERTED";
       case GUMBALL_SOLD:
