@@ -12,7 +12,7 @@ public class GumballStateMachineTest {
     OutController outController = new OutController();
 
     GumballStateMachine gumballStateMachine = new GumballStateMachine(outController,inController);
-    Assert.assertEquals(gumballStateMachine.getState(), GumballStateMachine.NO_QUARTER);
+    Assert.assertEquals(gumballStateMachine.getActualState().statetoString(), "NO_QUARTER");
 
 
   }

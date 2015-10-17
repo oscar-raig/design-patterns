@@ -1,6 +1,9 @@
 package raig.org;
 
 import org.apache.log4j.Logger;
+import raig.org.states.GumballState;
+import raig.org.states.HasQuarterState;
+import raig.org.states.NoQuarterState;
 
 
 import java.util.Observable;
@@ -14,6 +17,15 @@ public class GumballStateMachine implements Observer {
   private OutController outController;
   private InController inController;
 
+  GumballState noQuarterState;
+  GumballState hasQuarterState;
+
+  public GumballState getActualState() {
+    return actualState;
+  }
+
+  GumballState actualState = noQuarterState;
+
   static final  int NO_QUARTER = 0;
   static final  int QUARTER_INSERTED = 1;
   static final int GUMBALL_SOLD = 2;
@@ -21,12 +33,23 @@ public class GumballStateMachine implements Observer {
 
   private int state;
 
+  public GumballState getNoQuarterState() {
+    return noQuarterState;
+  }
+
+  public GumballState getHasQuarterState() {
+    return hasQuarterState;
+  }
+
   public GumballStateMachine(OutController outController,InController inController) {
 
     this.inController = inController;
     this.outController = outController;
     this.inController.addObserver(this);
     state = NO_QUARTER;
+    noQuarterState = new NoQuarterState(this);
+    hasQuarterState = new HasQuarterState(this);
+    actualState = noQuarterState;
 
   }
 
@@ -70,6 +93,10 @@ public class GumballStateMachine implements Observer {
 
   public int getState() {
     return state;
+  }
+
+  public void setState(GumballState stateNew) {
+    actualState = stateNew;
   }
 
   public String stateToString() {
