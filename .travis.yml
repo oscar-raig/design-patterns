@@ -3,7 +3,7 @@ jdk:
 - oraclejdk8
 
 script:
-- state-pattern/gradle check 	
+- cd state-pattern/ && gradle check 	
 
 after_success:
 - gradle jacocoTestReport coveralls
