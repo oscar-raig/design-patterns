@@ -2,7 +2,7 @@ package raig.org;
 
 import org.apache.log4j.Logger;
 
-public class GumballsMachineMain {
+class GumballsMachineMain {
 
   private static Logger logger = Logger.getLogger(GumballsMachineMain.class);
 

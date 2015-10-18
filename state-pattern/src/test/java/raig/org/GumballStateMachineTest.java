@@ -1,7 +1,14 @@
 package raig.org;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
+
+
+
 
 public class GumballStateMachineTest {
 
@@ -12,7 +19,7 @@ public class GumballStateMachineTest {
     OutController outController = new OutController();
 
     GumballStateMachine gumballStateMachine = new GumballStateMachine(outController,inController);
-    Assert.assertEquals(gumballStateMachine.getActualState().statetoString(), "NO_QUARTER");
+    Assert.assertEquals(gumballStateMachine.getState().statetoString(), "NO_QUARTER");
 
 
   }
@@ -23,10 +30,10 @@ public class GumballStateMachineTest {
     OutController outController = new OutController();
 
     GumballStateMachine gumballStateMachine =
-      new GumballStateMachine(outController,inController);
+        new GumballStateMachine(outController,inController);
     inController.quarterInsered();
 
-    Assert.assertEquals(gumballStateMachine.getState(), GumballStateMachine.QUARTER_INSERTED);
+    Assert.assertEquals(gumballStateMachine.getState().statetoString(), "QUARTER_INSERTED");
   }
 
   @Test
@@ -35,11 +42,11 @@ public class GumballStateMachineTest {
     OutController outController = new OutController();
 
     GumballStateMachine gumballStateMachine =
-      new GumballStateMachine(outController,inController);
+        new GumballStateMachine(outController,inController);
     inController.quarterInsered();
     inController.turnsCrank();
 
-    Assert.assertEquals(gumballStateMachine.getState(), GumballStateMachine.GUMBALL_SOLD);
+    Assert.assertEquals(gumballStateMachine.getState().statetoString(),"GUMBALL_SOLD");
   }
 
   @Test
@@ -48,12 +55,12 @@ public class GumballStateMachineTest {
     OutController outController = new OutController();
 
     GumballStateMachine gumballStateMachine =
-      new GumballStateMachine(outController,inController);
+        new GumballStateMachine(outController,inController);
     inController.quarterInsered();
     inController.turnsCrank();
     inController.gumballsNotFinished();
 
-    Assert.assertEquals(gumballStateMachine.getState(), GumballStateMachine.NO_QUARTER);
+    Assert.assertEquals(gumballStateMachine.getState().statetoString(), "NO_QUARTER");
 
   }
 
@@ -63,16 +70,42 @@ public class GumballStateMachineTest {
     OutController outController = new OutController();
 
     GumballStateMachine gumballStateMachine =
-      new GumballStateMachine(outController,inController);
+        new GumballStateMachine(outController,inController);
     inController.quarterInsered();
     inController.turnsCrank();
     inController.gumballsFinished();
 
-    Assert.assertEquals(gumballStateMachine.getState(), GumballStateMachine.OUT_OF_GUMBALLS);
+    Assert.assertEquals(gumballStateMachine.getState().statetoString(),"OUT_OF_GUMBALLS");
 
   }
 
 
 
+  @Test
+  public void when_crank_is_truned_should_call_dispense() {
+    InController inController = new InController();
+    OutController outController = Mockito.mock(OutController.class);
+
+    GumballStateMachine gumballStateMachine =
+          new GumballStateMachine(outController,inController);
+    inController.quarterInsered();
+    inController.turnsCrank();
+
+    verify(outController,times(1)).dispenseGumball();
+  }
+
+  @Test
+  public void when_sold_state_and_no_gumballs_should_call_turn_on_light_out_of_order() {
+    InController inController = new InController();
+    OutController outController = Mockito.mock(OutController.class);
+
+    GumballStateMachine gumballStateMachine =
+        new GumballStateMachine(outController,inController);
+    inController.quarterInsered();
+    inController.turnsCrank();
+    inController.gumballsFinished();
+
+    verify(outController,times(1)).turnsOnLightOutOfGumballs();
+  }
 
 }

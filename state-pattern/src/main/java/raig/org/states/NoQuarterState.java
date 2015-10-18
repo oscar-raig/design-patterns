@@ -2,7 +2,7 @@ package raig.org.states;
 
 import raig.org.GumballStateMachine;
 
-public class NoQuarterState implements GumballState {
+public class NoQuarterState implements State {
 
   GumballStateMachine gumballStateMachine;
 
@@ -34,5 +34,10 @@ public class NoQuarterState implements GumballState {
   @Override
   public String statetoString() {
     return "NO_QUARTER";
+  }
+
+  @Override
+  public void gumballsNotFinished() {
+
   }
 }

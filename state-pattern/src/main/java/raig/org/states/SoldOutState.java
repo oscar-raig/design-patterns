@@ -2,11 +2,12 @@ package raig.org.states;
 
 import raig.org.GumballStateMachine;
 
-public class HasQuarterState implements State {
+public class SoldOutState implements State {
+
 
   GumballStateMachine gumballStateMachine;
 
-  public HasQuarterState(GumballStateMachine gumballStateMachine) {
+  public SoldOutState(GumballStateMachine gumballStateMachine) {
     this.gumballStateMachine = gumballStateMachine;
   }
 
@@ -17,7 +18,7 @@ public class HasQuarterState implements State {
 
   @Override
   public void turnsCrank() {
-    gumballStateMachine.setState(gumballStateMachine.getSoldState());
+
   }
 
   @Override
@@ -32,7 +33,7 @@ public class HasQuarterState implements State {
 
   @Override
   public String statetoString() {
-    return "QUARTER_INSERTED";
+    return "OUT_OF_GUMBALLS";
   }
 
   @Override

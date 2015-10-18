@@ -1,9 +1,11 @@
 package raig.org;
 
 import org.apache.log4j.Logger;
-import raig.org.states.GumballState;
 import raig.org.states.HasQuarterState;
 import raig.org.states.NoQuarterState;
+import raig.org.states.SoldOutState;
+import raig.org.states.SoldState;
+import raig.org.states.State;
 
 
 import java.util.Observable;
@@ -16,28 +18,35 @@ public class GumballStateMachine implements Observer {
 
   private OutController outController;
   private InController inController;
+  private State noQuarterState;
+  private State hasQuarterState;
 
-  GumballState noQuarterState;
-  GumballState hasQuarterState;
+  private   State state = noQuarterState;
 
-  public GumballState getActualState() {
-    return actualState;
+  public State getSoldState() {
+    return soldState;
   }
 
-  GumballState actualState = noQuarterState;
+  public State getSoldOutSate() {
+    return soldOutSate;
+  }
 
-  static final  int NO_QUARTER = 0;
-  static final  int QUARTER_INSERTED = 1;
-  static final int GUMBALL_SOLD = 2;
-  static final int OUT_OF_GUMBALLS = 3;
+  State soldState;
+  State soldOutSate;
 
-  private int state;
+  public State getState() {
+    return state;
+  }
 
-  public GumballState getNoQuarterState() {
+
+
+
+
+  public State getNoQuarterState() {
     return noQuarterState;
   }
 
-  public GumballState getHasQuarterState() {
+  public State getHasQuarterState() {
     return hasQuarterState;
   }
 
@@ -46,10 +55,13 @@ public class GumballStateMachine implements Observer {
     this.inController = inController;
     this.outController = outController;
     this.inController.addObserver(this);
-    state = NO_QUARTER;
+
     noQuarterState = new NoQuarterState(this);
     hasQuarterState = new HasQuarterState(this);
-    actualState = noQuarterState;
+    soldOutSate = new SoldOutState(this);
+    soldState = new SoldState(this);
+
+    state = noQuarterState;
 
   }
 
@@ -57,60 +69,36 @@ public class GumballStateMachine implements Observer {
   public void update(Observable observable, Object arg) {
 
     int event = (int)arg;
-    switch (state) {
-      case NO_QUARTER:
-        if (event == InController.EVENT_QUARTER_INSERTED) {
-          state = QUARTER_INSERTED;
-          outController.turnsOffLightOutOfGumballs();
-        } else {
-          logger.error("NO_QUARTER error unexpected event");
-        }
+    switch (event) {
+      case InController.EVENT_QUARTER_INSERTED:
+        state.quarterInserted();
+        outController.turnsOffLightOutOfGumballs();
         break;
-      case QUARTER_INSERTED:
-        if ( event == InController.EVENT_TURNS_CRANK) {
-          state = GUMBALL_SOLD;
-          outController.dispenseGumball();
-        } else {
-          logger.error("QUARTER_INSERTED error unexpected event");
-        }
+      case InController.EVENT_TURNS_CRANK:
+        state.turnsCrank();
+        outController.dispenseGumball();
         break;
-      case GUMBALL_SOLD:
-        if ( event == InController.EVENT_GUMBALLS_FINISHED) {
-          state = OUT_OF_GUMBALLS;
-          outController.turnsOnLightOutOfGumballs();
-        } else if ( event == InController.EVENT_GUMBALLS_NOT_FINISHED) {
-          state = NO_QUARTER;
-        }  else {
-          logger.error("GUMBALL_SOLD error unexpected event");
-        }
+      case InController.EVENT_GUMBALLS_FINISHED:
+        state.gumballsFinished();
+        outController.turnsOnLightOutOfGumballs();
+        break;
+
+      case InController.EVENT_GUMBALLS_NOT_FINISHED:
+        state.gumballsNotFinished();
         break;
       default:
-        logger.error("Unexpected state" + state);
-        state = NO_QUARTER;
+        logger.error("Unexpected state" + state.statetoString());
+        setState(noQuarterState);
     }
 
   }
 
-  public int getState() {
-    return state;
-  }
 
-  public void setState(GumballState stateNew) {
-    actualState = stateNew;
+  public void setState(State stateNew) {
+    state = stateNew;
   }
 
   public String stateToString() {
-    switch (state) {
-      case NO_QUARTER:
-        return "NO_QUARTER";
-      case QUARTER_INSERTED:
-        return "QUARTER_INSERTED";
-      case GUMBALL_SOLD:
-        return "GUMBALL_SOLD";
-      case OUT_OF_GUMBALLS:
-        return "OUT_OF_GUMBALLS";
-      default:
-        return "ERROR";
-    }
+    return state.statetoString();
   }
 }
