@@ -82,7 +82,6 @@ public class GumballStateMachine implements Observer {
         state.gumballsFinished();
         outController.turnsOnLightOutOfGumballs();
         break;
-
       case InController.EVENT_GUMBALLS_NOT_FINISHED:
         state.gumballsNotFinished();
         break;
